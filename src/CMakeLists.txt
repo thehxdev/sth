@@ -1,7 +1,7 @@
 include(MimallocImport.cmake)
 
 add_library(
-	sth STATIC
+	sth
 	memory.c
 )
 
