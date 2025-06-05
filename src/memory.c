@@ -89,12 +89,9 @@ char *__sth_strdup(const char *s) {
 }
 
 size_t __sth_strlen(const char *s) {
-	size_t c = 0;
-	while (*s) {
-		s++;
-		c++;
-	}
-	return c;
+	const char *p = s;
+	while (*p++);
+	return (p-s-1);
 }
 
 char *__sth_strndup_fast(const char *s, size_t n) {
@@ -108,5 +105,5 @@ char *__sth_strndup_fast(const char *s, size_t n) {
 }
 
 char *__sth_strdup_fast(const char *s) {
-	return sth_strndup_fast(s, sth_strlen(s));
+	return __sth_strndup_fast(s, __sth_strlen(s));
 }
