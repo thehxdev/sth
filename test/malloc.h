@@ -4,10 +4,10 @@
 // Example of a wrapper header file to switch between libc memory allocation
 // functions and sth provided ones.
 
-#ifdef STH_MALLOC
-	// #define STH_MEM_DBG
-	#include <sth/malloc.h>
+#define STH_MEM_DBG
+#include <sth/malloc.h>
 
+#ifdef STH_MALLOC
 	#define malloc(s) sth_malloc(s)
 	#define calloc(c, s) sth_calloc(c, s)
 	#define realloc(p, s) sth_realloc(p, s)
