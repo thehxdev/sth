@@ -18,6 +18,12 @@ extern "C" {
 
 #define LOG_PREFIX "[STH-MEM-DEBUG] %s:%d: "
 
+#ifdef STH_MEM_DBG_LOG
+	#define log_dbg(fmt, ...) fprintf(stderr, LOG_PREFIX fmt, __VA_ARGS__);
+#else
+	#define log_dbg(fmt, ...)
+#endif
+
 #define exit_if_null(ptr, msg) \
 	do {	\
 		if ((ptr) == NULL) {	\
@@ -162,8 +168,7 @@ void __sth_mem_dbg_print(void) {
 void *__sth_malloc_dbg(size_t size, __STH_MEM_DBG_PARAMS) {
 	sth_mutex_lock(&meminfo.mu);
 	void *rp = __sth_malloc(size);
-	// fprintf(stderr, LOG_PREFIX "sth_malloc(%zu) = %p\n",
-	// 	file, line, size, rp);
+	log_dbg("sth_malloc(%zu) = %p\n", file, line, size, rp);
 	sth_mem_dbg_alloc_add(rp, size, file, line);
 	sth_mutex_unlock(&meminfo.mu);
 	return rp;
@@ -172,8 +177,7 @@ void *__sth_malloc_dbg(size_t size, __STH_MEM_DBG_PARAMS) {
 void *__sth_calloc_dbg(size_t count, size_t size, __STH_MEM_DBG_PARAMS) {
 	sth_mutex_lock(&meminfo.mu);
 	void *rp = __sth_calloc(count, size);
-	// fprintf(stderr, LOG_PREFIX "sth_calloc(%zu, %zu) = %p\n",
-	// 	file, line, count, size, rp);
+	log_dbg("sth_calloc(%zu, %zu) = %p\n", file, line, count, size, rp);
 	sth_mem_dbg_alloc_add(rp, size, file, line);
 	sth_mutex_unlock(&meminfo.mu);
 	return rp;
@@ -182,8 +186,7 @@ void *__sth_calloc_dbg(size_t count, size_t size, __STH_MEM_DBG_PARAMS) {
 void *__sth_realloc_dbg(void *p, size_t size, __STH_MEM_DBG_PARAMS) {
 	sth_mutex_lock(&meminfo.mu);
 	void *rp = __sth_realloc(p, size);
-	// fprintf(stderr, LOG_PREFIX "sth_realloc(%p, %zu) = %p\n",
-	// 	file, line, p, size, rp);
+	log_dbg("sth_realloc(%p, %zu) = %p\n", file, line, p, size, rp);
 	sth_mem_dbg_alloc_change(p, rp, size, file, line);
 	sth_mutex_unlock(&meminfo.mu);
 	return rp;
@@ -193,8 +196,7 @@ void __sth_free_dbg(void *p, __STH_MEM_DBG_PARAMS) {
 	(void)file; (void)line;
 	sth_mutex_lock(&meminfo.mu);
 	__sth_free(p);
-	// fprintf(stderr, LOG_PREFIX "sth_free(%p)\n",
-	// 	file, line, p);
+	log_dbg("sth_free(%p)\n", file, line, p);
 	sth_mem_dbg_alloc_remove(p);
 	sth_mutex_unlock(&meminfo.mu);
 }

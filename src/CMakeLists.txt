@@ -48,6 +48,10 @@ if (STH_WITH_MIMALLOC)
 	target_compile_definitions(sth PRIVATE STH_WITH_MIMALLOC=1)
 endif()
 
+if (STH_MEM_DBG_LOG)
+	target_compile_definitions(sth PRIVATE STH_MEM_DBG_LOG=1)
+endif()
+
 install(
 	TARGETS sth EXPORT sth
 	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
