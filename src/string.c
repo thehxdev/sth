@@ -80,9 +80,10 @@ void *__sth_memmove_fast(void *dest, const void *src, size_t n) {
 }
 
 char *__sth_strndup(const char *s, size_t n) {
-	char *buf = sth_malloc(n);
+	char *buf = sth_malloc(n + 1);
 	if (buf == NULL)
 		return NULL;
+	buf[n] = 0;
 	return memcpy(buf, s, n);
 }
 
@@ -111,9 +112,10 @@ char *__sth_strdup_fast(const char *s) {
 }
 
 char *__sth_strndup_dbg(const char *s, size_t n, __STH_MEM_DBG_PARAMS) {
-	char *buf = __sth_malloc_dbg(n, file, line);
+	char *buf = __sth_malloc_dbg(n + 1, file, line);
 	if (buf == NULL)
 		return NULL;
+	buf[n] = 0;
 	return memcpy(buf, s, n);
 }
 
