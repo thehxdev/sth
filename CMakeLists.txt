@@ -9,7 +9,6 @@ project(
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 option(STH_WITH_MIMALLOC "use mimalloc as default memory allocator" ON)
-# option(STH_WITH_MEM_DGB "enable memory allocation debugging features" OFF)
 option(STH_MEM_DBG_LOG "log memory allocations in *_dbg functions" OFF)
 
 # Test if sth is the main project or added to another project as dependency

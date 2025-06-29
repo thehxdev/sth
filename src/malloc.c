@@ -69,9 +69,7 @@ void __sth_mem_dbg_init(void) {
 void __sth_mem_dbg_destroy(void) {
 	sth_mutex_destroy(&meminfo.mu);
 	allocation_t *lhs = meminfo.head, *rhs = meminfo.head;
-	while (1) {
-		if (lhs == NULL)
-			break;
+	while (lhs) {
 		rhs = lhs->next;
 		__sth_free(lhs->file);
 		__sth_free(lhs);
@@ -131,7 +129,6 @@ static int sth_mem_dbg_alloc_remove(void *p) {
 		meminfo.tail = tmp->prev;
 
 	__sth_free(tmp);
-
 	return 0;
 }
 
@@ -193,7 +190,6 @@ void *__sth_realloc_dbg(void *p, size_t size, __STH_MEM_DBG_PARAMS) {
 }
 
 void __sth_free_dbg(void *p, __STH_MEM_DBG_PARAMS) {
-	(void)file; (void)line;
 	sth_mutex_lock(&meminfo.mu);
 	__sth_free(p);
 	log_dbg("sth_free(%p)\n", file, line, p);

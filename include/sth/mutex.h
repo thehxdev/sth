@@ -5,14 +5,15 @@
 extern "C" {
 #endif
 
-// Code below copied from https://github.com/cgaebel/pipe
+// Code below copied from https://github.com/cgaebel/pipe with some modifications
+// to be used in sth.
 
 // The number of spins to do before performing an expensive kernel-mode context
 // switch. This is a nice easy value to tweak for your application's needs. Set
 // it to 0 if you want the implementation to decide, a low number if you are
 // copying many objects into pipes at once (or a few large objects), and a high
 // number if you are coping small or few objects into pipes at once.
-#define STH_MUTEX_SPINS 8192
+#define __STH_MUTEX_SPINS (8192)
 
 // Standard threading stuff. This lets us support simple synchronization
 // primitives on multiple platforms painlessly.
@@ -45,7 +46,7 @@ extern "C" {
 
 #define sth_mutex_t         CRITICAL_SECTION
 
-#define sth_mutex_init(m)   InitializeCriticalSectionAndSpinCount((m), STH_MUTEX_SPINS)
+#define sth_mutex_init(m)   InitializeCriticalSectionAndSpinCount((m), __STH_MUTEX_SPINS)
 #define sth_mutex_lock      EnterCriticalSection
 #define sth_mutex_unlock    LeaveCriticalSection
 #define sth_mutex_destroy   DeleteCriticalSection

@@ -1,3 +1,7 @@
+# if (STH_WITH_MIMALLOC)
+# 	include(MimallocImport)
+# endif()
+
 set(
 	sth_public_headers
 	${STH_PUBLIC_HEADERS_DIR}/sth/malloc.h
@@ -16,13 +20,13 @@ add_library(
 	sth
 	${sth_source_files}
 	${sth_public_headers}
+	# $<TARGET_OBJECTS:mimalloc-obj>
 )
 
 target_compile_options(
 	sth
 	PRIVATE
 	"$<BUILD_INTERFACE:-Wall;-Wextra>"
-	# "$<BUILD_INTERFACE:$<${STH_WITH_MIMALLOC}:-fno-builtin-malloc>>"
 )
 
 target_compile_features(sth PRIVATE c_std_11)
@@ -32,7 +36,6 @@ target_include_directories(
 	"$<INSTALL_INTERFACE:include>"
 	"$<BUILD_INTERFACE:${STH_PUBLIC_HEADERS_DIR}>"
 )
-# target_include_directories(sth PUBLIC "${STH_INCLUDE_DIR}")
 
 set_target_properties(
 	sth PROPERTIES

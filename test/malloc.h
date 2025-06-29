@@ -2,7 +2,8 @@
 #define _MALLOC_H_
 
 // Example of a wrapper header file to switch between libc memory allocation
-// functions and sth provided ones.
+// functions and sth provided ones. This is useful if sth is built with it's
+// default memory allocator MiMalloc.
 
 #define STH_MEM_DBG
 #include <sth/malloc.h>
