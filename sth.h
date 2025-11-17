@@ -267,6 +267,9 @@ void sth_arena_scope_begin(sth_arena_t *arena, sth_arena_scope_t *scope_out);
 // Restore an arena's state from an snapshot.
 void sth_arena_scope_end(sth_arena_scope_t *scope);
 
+// Allocate n+1 bytes on the arena and copy string s to that buffer.
+char *sth_arena_strndup(sth_arena_t *arena, const char *s, size_t n);
+
 
 typedef union __sth_mempool_chunk __sth_mempool_chunk_t;
 typedef struct {
@@ -291,6 +294,9 @@ void *sth_memmove_fast(void *dest, const void *src, size_t n);
  ***********************************************************
  */
 
+/*
+ * Begin operating system abstractions
+ */
 static void *sth_os_mem_reserve(size_t size, int with_large_pages) {
     void *p; int wlp;
 #ifdef STH_PLAT_UNIX
@@ -316,7 +322,7 @@ static int sth_os_mem_commit(void *p, size_t size, int with_large_pages) {
 #endif
 }
 
-// release an reserved memory block
+// release a reserved memory block
 static void sth_os_mem_release(void *p, size_t size) {
 #ifdef STH_PLAT_UNIX
     munmap(p, size);
@@ -345,12 +351,20 @@ static inline size_t sth_os_get_largepagesize(void) {
     return GetLargePageMinimum();
 #endif
 }
+/*
+ * End operating system abstractions
+ */
 
+
+/*
+ * Begin Arena memory allocator
+ */
 sth_arena_t *sth_arena_new(const sth_arena_config_t *config) {
     sth_arena_t *a;
     size_t pagesize, reserve, commit;
-    int lp = config->flags & STH_ARENA_LARGPAGES;
 
+    STH_ASSERT(config);
+    int lp = config->flags & STH_ARENA_LARGPAGES;
     pagesize = (lp) ? sth_os_get_largepagesize() : sth_os_get_pagesize();
 
     // align reserve and commit fields by operating system's page size
@@ -386,6 +400,7 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
     sth_arena_t *current, *new_arena;
     size_t padding;
 
+    STH_ASSERT(arena);
     if (size == 0)
         return NULL;
 
@@ -429,14 +444,17 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
 }
 
 size_t sth_arena_pos(const sth_arena_t *arena) {
+    STH_ASSERT(arena);
     return (arena->current->pos_base + arena->current->pos);
 }
 
 int sth_arena_is_empty(const sth_arena_t *arena) {
+    STH_ASSERT(arena);
     return ((arena->current->prev == NULL) && (arena->pos == 0));
 }
 
 void sth_arena_pop_to(sth_arena_t *arena, size_t pos) {
+    STH_ASSERT(arena);
     sth_arena_t *current = arena->current, *prev = NULL;
     if (pos < sizeof(*arena))
         pos += sizeof(*arena);
@@ -450,17 +468,20 @@ void sth_arena_pop_to(sth_arena_t *arena, size_t pos) {
 }
 
 void sth_arena_pop(sth_arena_t *arena, size_t offset) {
+    STH_ASSERT(arena);
     size_t curr_pos = sth_arena_pos(arena);
     if (offset <= curr_pos)
         sth_arena_pop_to(arena, curr_pos - offset);
 }
 
 void sth_arena_reset(sth_arena_t *arena) {
+    STH_ASSERT(arena);
     sth_arena_pop_to(arena, 0);
 }
 
 void sth_arena_destroy(sth_arena_t *arena) {
     sth_arena_t *current, *prev;
+    STH_ASSERT(arena);
     current = arena->current;
     while (current) {
         prev = current->prev;
@@ -470,15 +491,35 @@ void sth_arena_destroy(sth_arena_t *arena) {
 }
 
 void sth_arena_scope_begin(sth_arena_t *arena, sth_arena_scope_t *scope_out) {
+    STH_ASSERT(arena);
+    STH_ASSERT(scope_out);
     scope_out->arena = arena;
     scope_out->__pos = sth_arena_pos(arena);
 }
 
 void sth_arena_scope_end(sth_arena_scope_t *scope) {
+    STH_ASSERT(scope);
     sth_arena_pop_to(scope->arena, scope->__pos);
 }
 
+char *sth_arena_strndup(sth_arena_t *arena, const char *s, size_t n) {
+    STH_ASSERT(arena);
+    STH_ASSERT(s);
+    if (n == 0)
+        return NULL;
+    char *buf = sth_arena_alloc(arena, n+1);
+    memcpy(buf, s, n);
+    buf[n] = 0;
+    return buf;
+}
+/*
+ * End Arena memory allocator
+ */
 
+
+/*
+ * Begin Pool allocator
+ */
 union __sth_mempool_chunk {
     __sth_mempool_chunk_t *next;
 };
@@ -506,8 +547,14 @@ void sth_mempool_put(sth_mempool_t *pool, void *v) {
     c->next = pool->freelist;
     pool->freelist = c;
 }
+/*
+ * End Pool allocator
+ */
 
 
+/*
+ * Begin string and memory utilities
+ */
 typedef unsigned long long __sth_word_t;
 
 #define __STH_WORD_BIT_SIZE         (sizeof(__sth_word_t) << 3U)
@@ -541,7 +588,11 @@ void *sth_memcpy_fast(void *dest, const void *src, size_t n) {
 }
 
 void *sth_memmove_fast(void *dest, const void *src, size_t n) {
-    if (dest < src)
+    if (dest == src)
+        return dest;
+
+    // took from musl libc
+    if ((((uintptr_t)dest - (uintptr_t)src - n) <= (-2*n)) || (dest < src))
         return sth_memcpy_fast(dest, src, n);
 
     __sth_aligned_mem_info(src, n);
@@ -565,6 +616,9 @@ void *sth_memmove_fast(void *dest, const void *src, size_t n) {
 
     return dest;
 }
+/*
+ * End string utilities
+ */
 #endif // STH_IMPL
 
 #ifdef __cplusplus
