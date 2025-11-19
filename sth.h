@@ -3,8 +3,8 @@
 
 #define STH_VERSION_MAJOR 0
 #define STH_VERSION_MINOR 1
-#define STH_VERSION_PATCH 1
-#define STH_VERSION_STRING "0.1.1"
+#define STH_VERSION_PATCH 2
+#define STH_VERSION_STRING "0.1.2"
 
 #ifdef _WIN32
     #define _CRT_SECURE_NO_WARNINGS (1)
