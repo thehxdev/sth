@@ -66,6 +66,11 @@ extern "C" {
         __elapsed = ((double)(__clock_end - __clock_start)) * 1000.0 / CLOCKS_PER_SEC; \
     } while (0)
 
+#define sth_offsetof(_type, _field) (&((_type*)NULL)->_field)
+#ifndef offsetof
+    #define offsetof sth_offsetof
+#endif
+
 // Branch prediction hints
 #if defined(__clang__) || defined(__GNUC__)
     #define STH_EXPECT(expr, val) __builtin_expect((expr), (val))
