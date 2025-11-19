@@ -224,13 +224,23 @@ typedef struct {
 #define STH_ARENA_DEFAULT_RESERVE_SIZE STH_MB(16)
 #define STH_ARENA_DEFAULT_COMMIT_SIZE  STH_KB(16)
 
-#define STH_ARENA_DEFAULT_CONFIG \
-    ((sth_arena_config_t){ \
-        .reserve = STH_ARENA_DEFAULT_RESERVE_SIZE, \
-        .commit = STH_ARENA_DEFAULT_COMMIT_SIZE, \
-        .alignment = STH_ARENA_DEFAULT_ALIGNMENT, \
-        .flags = STH_ARENA_NONE \
-    })
+#ifdef __cplusplus
+    #define STH_ARENA_DEFAULT_CONFIG \
+        { \
+            STH_ARENA_DEFAULT_RESERVE_SIZE, \
+            STH_ARENA_DEFAULT_COMMIT_SIZE, \
+            STH_ARENA_DEFAULT_ALIGNMENT, \
+            STH_ARENA_NONE \
+        }
+#else
+    #define STH_ARENA_DEFAULT_CONFIG \
+        ((sth_arena_config_t){ \
+            .reserve = STH_ARENA_DEFAULT_RESERVE_SIZE, \
+            .commit = STH_ARENA_DEFAULT_COMMIT_SIZE, \
+            .alignment = STH_ARENA_DEFAULT_ALIGNMENT, \
+            .flags = STH_ARENA_NONE \
+        })
+#endif
 
 sth_arena_t *sth_arena_new(const sth_arena_config_t *config);
 
