@@ -59,11 +59,10 @@ extern "C" {
 
 #define STH_TIME_SPENT_MS(__elapsed, __block) \
     do { \
-        clock_t __clock_start, __clock_end; \
+        clock_t __clock_start; \
         __clock_start = clock(); \
         do { __block; } while (0); \
-        __clock_end = clock(); \
-        __elapsed = ((double)(__clock_end - __clock_start)) * 1000.0 / CLOCKS_PER_SEC; \
+        __elapsed = ((double)(clock() - __clock_start)) * 1000.0 / CLOCKS_PER_SEC; \
     } while (0)
 
 #define sth_offsetof(_type, _field) (&((_type*)NULL)->_field)
