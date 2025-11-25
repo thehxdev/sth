@@ -192,7 +192,6 @@ extern "C" {
 #define sth_da_free(da) STH_FREE((da)->items)
 
 
-sth_static_assert((sizeof(uintptr_t) == sizeof(void*)), validate_uintptr_size);
 #define STH_ARENA_DEFAULT_ALIGNMENT sizeof(uintptr_t)
 
 enum {
@@ -225,6 +224,7 @@ typedef struct {
     size_t __pos; // read-only
 } sth_arena_scope_t;
 
+#define STH_ARENA_INITIAL_POS (sizeof(sth_arena_t))
 #define STH_ARENA_DEFAULT_RESERVE_SIZE STH_MB(16)
 #define STH_ARENA_DEFAULT_COMMIT_SIZE  STH_KB(16)
 
@@ -373,6 +373,8 @@ static inline size_t sth_os_get_largepagesize(void) {
 /*
  * Begin Arena memory allocator
  */
+sth_static_assert((sizeof(uintptr_t) == sizeof(void*)), validate_uintptr_size);
+
 sth_arena_t *sth_arena_new(const sth_arena_config_t *config) {
     sth_arena_t *a;
     size_t pagesize, reserve, commit;
@@ -402,7 +404,7 @@ sth_arena_t *sth_arena_new(const sth_arena_config_t *config) {
     a->reserved = reserve;
 
     a->pos_base = 0;
-    a->pos = sizeof(*a);
+    a->pos = STH_ARENA_INITIAL_POS;
     a->prev = NULL;
     a->current = a;
 
@@ -415,7 +417,8 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
     size_t padding;
 
     STH_ASSERT(arena);
-    if (size == 0)
+    // If size is zero or requested size is bigger than the arena return NULL
+    if (size == 0 || size > (arena->reserved - sizeof(*arena)))
         return NULL;
 
     current = arena->current;
@@ -464,15 +467,13 @@ size_t sth_arena_pos(const sth_arena_t *arena) {
 
 int sth_arena_is_empty(const sth_arena_t *arena) {
     STH_ASSERT(arena);
-    return ((arena->current->prev == NULL) && (arena->pos == 0));
+    return ((arena->current->pos_base == 0) && (arena->pos == STH_ARENA_INITIAL_POS));
 }
 
 void sth_arena_pop_to(sth_arena_t *arena, size_t pos) {
     STH_ASSERT(arena);
     sth_arena_t *current = arena->current, *prev = NULL;
-    if (pos < sizeof(*arena))
-        pos += sizeof(*arena);
-    while (current->pos_base > pos) {
+    while (current->pos_base >= pos) {
         prev = current->prev;
         sth_os_mem_release(current, current->reserved);
         current = prev;
@@ -490,7 +491,7 @@ void sth_arena_pop(sth_arena_t *arena, size_t offset) {
 
 void sth_arena_reset(sth_arena_t *arena) {
     STH_ASSERT(arena);
-    sth_arena_pop_to(arena, 0);
+    sth_arena_pop_to(arena, STH_ARENA_INITIAL_POS);
 }
 
 void sth_arena_destroy(sth_arena_t *arena) {
@@ -521,7 +522,7 @@ char *sth_arena_strndup(sth_arena_t *arena, const char *s, size_t n) {
     STH_ASSERT(s);
     if (n == 0)
         return NULL;
-    char *buf = sth_arena_alloc(arena, n+1);
+    char *buf = STH_DECLTYPE_CAST(buf) sth_arena_alloc(arena, n+1);
     memcpy(buf, s, n);
     buf[n] = 0;
     return buf;
