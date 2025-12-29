@@ -1,1 +1,1 @@
-STH is just a single-header C/C++ library as a helper base layer for my projects.
+STH is a base layer for my C/C++ projects.
