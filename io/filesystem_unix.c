@@ -4,7 +4,7 @@ extern "C" {
 
 int sth_io_file_exists(const char *path) {
     struct stat statbuf;
-    if (stat(file_path, &statbuf) < 0) {
+    if (stat(path, &statbuf) < 0) {
         return STH_FAILED;
     }
     return STH_OK;
