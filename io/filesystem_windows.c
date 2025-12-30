@@ -3,7 +3,7 @@ extern "C" {
 #endif
 
 int sth_io_file_exists(const char *path) {
-    DWORD dwAttrib = GetFileAttributesA(file_path);
+    DWORD dwAttrib = GetFileAttributesA(path);
     return dwAttrib != INVALID_FILE_ATTRIBUTES;
 }
 
@@ -15,8 +15,8 @@ int sth_io_rename(const char *old_path, const char *new_path) {
 }
 
 int sth_io_mkdir_if_not_exists(const char *path) {
-    int res = (int)CreateDirectory(path, STH_NULL);
-    if (res == 0) {
+    BOOL res = (int)CreateDirectory(path, STH_NULL);
+    if (!res) {
         int err = GetLastError();
         if (err == ERROR_ALREADY_EXISTS)
             return STH_OK;
