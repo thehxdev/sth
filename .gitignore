@@ -1,5 +1,7 @@
 a.out
 *.o
+libsth.so
+libsth.a
 tags
 TAGS
 compile_flags.txt
