@@ -32,10 +32,12 @@
 #include <stdint.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #ifdef STH_BASE_PLAT_UNIX
-    #include <errno.h>
     #include <sys/stat.h>
+#else
+    #include <windows.h>
 #endif
 
 #include "base/base.h"

@@ -1,4 +1,6 @@
 // Library public interface
+#define STB_SPRINTF_IMPLEMENTATION
+#define STB_DS_IMPLEMENTATION
 #include "sth.h"
 
 #include "allocators/allocators.c"

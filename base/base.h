@@ -108,4 +108,6 @@ enum {
     #define STH_BASE_DECLTYPE(T) (T)
 #endif
 
+#include "stb_sprintf.h"
+
 #endif // _STH_BASE_BASE_H_

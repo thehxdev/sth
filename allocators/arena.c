@@ -9,7 +9,6 @@ extern "C" {
     #include <sys/mman.h>
     #include <unistd.h>
 #else
-    #include <windows.h>
     #include <memoryapi.h>
     #include <sysinfoapi.h>
 #endif
