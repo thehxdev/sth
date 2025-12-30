@@ -39,6 +39,7 @@
 #endif
 
 #include "base/base.h"
+#include "ds/ds.h"
 #include "io/io.h"
 #include "allocators/allocators.h"
 
