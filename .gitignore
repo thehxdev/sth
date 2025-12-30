@@ -2,3 +2,4 @@ a.out
 *.o
 tags
 TAGS
+compile_flags.txt
