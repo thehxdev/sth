@@ -1,0 +1,41 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "../base/base.h"
+
+char *sth_io_file_read_all(const char *path, size_t *out_file_size) {
+    size_t file_size = 0;
+    char *content = STH_NULL;
+    FILE *fp = fopen(path, "rb");
+    if (!fp)
+        goto ret;
+
+    fseek(fp, 0, SEEK_END);
+    file_size = ftell(fp);
+    if (file_size == 0)
+        goto ret_close_file;
+    rewind(fp);
+
+    content = STH_BASE_DECLTYPE(STH_BASE_MALLOC(file_size + 1));
+    STH_BASE_ASSERT(content != STH_NULL);
+
+    size_t nread = fread(content, sizeof(*content), file_size, fp);
+    STH_BASE_ASSERT(file_size == nread);
+
+    *out_file_size = file_size;
+ret_close_file:
+    fclose(fp);
+ret:
+    return content;
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef STH_BASE_PLAT_UNIX
+    #include "filesystem_unix.c"
+#else
+    #include "filesystem_windows.c"
+#endif
