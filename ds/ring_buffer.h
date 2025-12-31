@@ -9,8 +9,7 @@
     do { \
         STH_BASE_ASSERT((capacity & (capacity-1)) == 0 && "ring buffer capacity must be a power of 2"); \
         size_t _cap_ = (capacity); \
-        void *_buffer_ = (backing_buffer); \
-        (rb)->items = STH_BASE_DECLTYPE(_buffer_); \
+        (rb)->items = STH_BASE_DECLTYPE((rb)->items) (backing_buffer); \
         (rb)->read = 0; \
         (rb)->write = 0; \
         (rb)->cap = _cap_; \
