@@ -1,9 +1,17 @@
 #ifndef _STH_BASE_BASE_H_
 #define _STH_BASE_BASE_H_
 
+#ifdef __cplusplus
+    #define STH_NULL nullptr
+    #define STH_BASE_DECLTYPE(T) (decltype(T))
+#else
+    #define STH_NULL NULL
+    #define STH_BASE_DECLTYPE(T) (T)
+#endif
+
 enum {
-    STH_OK,
     STH_FAILED,
+    STH_OK,
 };
 
 #define STH_BASE_KB(value) ((value) * 1024)
@@ -54,8 +62,8 @@ enum {
 
 
 #if defined(NDEBUG)
-    #define sth_base_assert(cond)
-    #define sth_base_trap_assert(cond)
+    #define sth_base_assert(cond)   (STH_NULL)
+    #define sth_base_trap_assert(cond)  (STH_NULL)
 #else
     #define sth_base_assert(cond) \
         do { \
@@ -99,14 +107,6 @@ enum {
 // align up a number to a power-of-2 alignment
 #define sth_base_align_pow2(num, alignment) \
     ((((uintptr_t)num) + ((alignment) - 1)) & (~((alignment) - 1)))
-
-#ifdef __cplusplus
-    #define STH_NULL nullptr
-    #define STH_BASE_DECLTYPE(T) (decltype(T))
-#else
-    #define STH_NULL NULL
-    #define STH_BASE_DECLTYPE(T) (T)
-#endif
 
 #include "stb_sprintf.h"
 
