@@ -8,6 +8,6 @@ log_run() {
 if [[ -z "$CC" ]]; then
     CC=cc
 fi
-CFLAGS=(-std=gnu99 -Wall -Wextra -Og -g3)
+CFLAGS=(-std=gnu99 -Wall -Wextra -Wshadow -Wpadded -Og -g3)
 
 log_run $CC "${CFLAGS[@]}" -c sth.c ; rm -f sth.o
