@@ -70,16 +70,16 @@ static inline size_t sth_arena_os_get_largepagesize(void) {
 #endif
 }
 
-sth_arena_t *sth_arena_new(const sth_arena_config_t *config) {
+sth_arena_t *sth_arena_new(sth_arena_config_t config) {
     sth_arena_t *a;
     size_t pagesize, reserve, commit;
-    int lp = config->flags & STH_ARENA_LARGPAGES;
+    int lp = config.flags & STH_ARENA_LARGPAGES;
 
     pagesize = (lp) ? sth_arena_os_get_largepagesize() : sth_arena_os_get_pagesize();
 
     // align reserve and commit fields by operating system's page size
-    reserve = sth_base_align_pow2(config->reserve, pagesize);
-    commit = sth_base_align_pow2(config->commit, pagesize);
+    reserve = sth_base_align_pow2(config.reserve, pagesize);
+    commit = sth_base_align_pow2(config.commit, pagesize);
 
     a = (sth_arena_t*) sth_arena_os_mem_reserve(reserve, lp);
     if (!a)
@@ -90,7 +90,7 @@ sth_arena_t *sth_arena_new(const sth_arena_config_t *config) {
         return STH_NULL;
     }
 
-    memcpy(&a->config, config, sizeof(*config));
+    memcpy(&a->config, &config, sizeof(config));
 
     // store aligned values
     a->config.reserve = reserve;
@@ -125,7 +125,7 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
         if (current->config.flags & STH_ARENA_FIXED)
             return STH_NULL;
 
-        if ( !(new_arena = sth_arena_new(&current->config)))
+        if ( !(new_arena = sth_arena_new(current->config)))
             return STH_NULL;
 
         new_arena->pos_base = current->pos_base + current->reserved;

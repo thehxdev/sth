@@ -53,7 +53,7 @@ typedef struct sth_arena_scope {
 #define STH_ARENA_HEADER_SIZE   (128)
 sth_base_static_assert((sizeof(sth_arena_t) <= STH_ARENA_HEADER_SIZE), validate_sth_arena_header_size);
 
-sth_arena_t *sth_arena_new(const sth_arena_config_t *config);
+sth_arena_t *sth_arena_new(sth_arena_config_t config);
 
 void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment);
 
