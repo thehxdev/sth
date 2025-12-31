@@ -6,7 +6,7 @@
     #define STH_BASE_DECLTYPE(T) (decltype(T))
 #else
     #define STH_NULL NULL
-    #define STH_BASE_DECLTYPE(T) (T)
+    #define STH_BASE_DECLTYPE(T)
 #endif
 
 enum {

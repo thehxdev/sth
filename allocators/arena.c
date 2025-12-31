@@ -218,7 +218,7 @@ void sth_arena_scope_end(sth_arena_scope_t *scope) {
 }
 
 char *sth_arena_strndup(sth_arena_t *arena, const char *s, size_t size) {
-    char *buf = sth_arena_alloc(arena, size + 1);
+    char *buf = STH_BASE_DECLTYPE(buf) sth_arena_alloc(arena, size + 1);
     STH_BASE_ASSERT(buf != STH_NULL);
     memcpy(buf, s, size);
     buf[size] = 0;

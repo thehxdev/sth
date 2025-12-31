@@ -6,7 +6,7 @@
 #define STH_VERSION_PATCH 0
 #define STH_VERSION_STRING "0.2.0"
 
-#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L
+#if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
     #error "At least C99 standard is required"
 #endif
 

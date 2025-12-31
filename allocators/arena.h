@@ -1,6 +1,10 @@
 #ifndef _STH_ALLOCATORS_ARENA_H_
 #define _STH_ALLOCATORS_ARENA_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define sth_arena_alloc(arena, size) \
     sth_arena_alloc_align((arena), (size), (arena)->config.alignment)
 
@@ -70,4 +74,9 @@ void sth_arena_scope_begin(sth_arena_t *arena, sth_arena_scope_t *scope_out);
 void sth_arena_scope_end(sth_arena_scope_t *scope);
 
 char *sth_arena_strndup(sth_arena_t *arena, const char *s, size_t size);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif // _STH_ALLOCATORS_ARENA_H_

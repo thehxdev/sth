@@ -2,10 +2,8 @@
 extern "C" {
 #endif
 
-#include "../base/base.h"
-
 char *sth_io_file_read_all(const char *path, size_t *out_file_size) {
-    size_t file_size = 0;
+    size_t file_size = 0, nread = 0;
     char *content = STH_NULL;
     FILE *fp = fopen(path, "rb");
     if (!fp)
@@ -17,10 +15,10 @@ char *sth_io_file_read_all(const char *path, size_t *out_file_size) {
         goto ret_close_file;
     rewind(fp);
 
-    content = STH_BASE_DECLTYPE(STH_BASE_MALLOC(file_size + 1));
+    content = STH_BASE_DECLTYPE(content) STH_BASE_MALLOC(file_size + 1);
     STH_BASE_ASSERT(content != STH_NULL);
 
-    size_t nread = fread(content, sizeof(*content), file_size, fp);
+    nread = fread(content, sizeof(*content), file_size, fp);
     STH_BASE_ASSERT(file_size == nread);
 
     *out_file_size = file_size;
