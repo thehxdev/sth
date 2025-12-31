@@ -26,17 +26,17 @@
 
 #define sth_ds_ring_buffer_push(rb, item) \
     ((!sth_ds_ring_buffer_is_full((rb))) \
-        ? ((rb)->write += 1, (rb)->items[sth_ds_ring_buffer_mask((rb)->cap, (rb)->write)] = (item), STH_OK) \
-        : STH_FAILED)
+     ? ((rb)->write += 1, (rb)->items[sth_ds_ring_buffer_mask((rb)->cap, (rb)->write)] = (item), STH_OK) \
+     : STH_FAILED)
 
 #define sth_ds_ring_buffer_shift(rb) \
     ((!sth_ds_ring_buffer_is_empty((rb))) \
-        ? ((rb)->read += 1, (rb)->items[sth_ds_ring_buffer_mask((rb)->cap, (rb)->read)], STH_OK) \
-        : STH_FAILED)
+     ? ((rb)->read += 1, (rb)->items[sth_ds_ring_buffer_mask((rb)->cap, (rb)->read)], STH_OK) \
+     : STH_FAILED)
 
 #define sth_ds_ring_buffer_shift_out(rb, out) \
     ((!sth_ds_ring_buffer_is_empty((rb))) \
-        ? ((rb)->read += 1, (out) = (rb)->items[sth_ds_ring_buffer_mask((rb)->cap, (rb)->read)], STH_OK) \
-        : STH_FAILED)
+     ? ((rb)->read += 1, (out) = (rb)->items[sth_ds_ring_buffer_mask((rb)->cap, (rb)->read)], STH_OK) \
+     : STH_FAILED)
 
 #endif // _STH_DS_RING_BUFFER_H_

@@ -148,8 +148,8 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
         while (must_commit < pos_past)
             must_commit += current->config.commit;
         sth_arena_os_mem_commit((unsigned char*)current + current->commited,
-                            must_commit,
-                            current->config.flags & STH_ARENA_LARGPAGES);
+                                must_commit,
+                                current->config.flags & STH_ARENA_LARGPAGES);
         current->commited = must_commit;
     }
 
