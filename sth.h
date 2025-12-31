@@ -33,6 +33,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <stdbool.h>
 
 #ifdef STH_BASE_PLAT_UNIX
     #include <sys/stat.h>
