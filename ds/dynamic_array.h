@@ -28,7 +28,7 @@
 #define sth_ds_da_append(da, item) \
     do { \
         sth_ds_da_reserve((da), (da)->len + 1); \
-        memcpy(&(da)->items[(da)->len], item, sizeof(*(da)->items)); \
+        (da)->items[(da)->len] = (item); \
         (da)->len++; \
     } while (0)
 
@@ -41,8 +41,9 @@
 
 #define sth_ds_da_resize(da, new_size) \
     do { \
-        sth_ds_da_reserve((da), (new_size)); \
-        (da)->len = (new_size); \
+        size_t _new_size_ = (new_size); \
+        sth_ds_da_reserve((da), (_new_size_)); \
+        (da)->len = (_new_size_); \
     } while (0)
 
 #define sth_ds_da_last(da) (da)->items[(STH_BASE_ASSERT((da)->len > 0), (da)->len-1)]
@@ -51,7 +52,7 @@
     do { \
         size_t _idx_ = (i); \
         STH_BASE_ASSERT(_idx_ < (da)->len); \
-        memcpy(&(da)->items[_idx_], (da)->items[(da)->len], sizeof(*(da)->items)); \
+        (da)->items[_idx_] = (da)->items[(da)->len]; \
         (da)->len -= 1; \
     } while(0)
 
