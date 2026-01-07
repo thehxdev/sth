@@ -31,9 +31,3 @@ ret:
 #ifdef __cplusplus
 }
 #endif
-
-#ifdef STH_BASE_PLAT_UNIX
-    #include "filesystem_unix.c"
-#else
-    #include "filesystem_windows.c"
-#endif
