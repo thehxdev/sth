@@ -2,91 +2,23 @@
 extern "C" {
 #endif
 
-#include <string.h>
-
-#if defined(STH_BASE_PLAT_UNIX)
-    // unix-like platforms
-    #include <sys/mman.h>
-    #include <unistd.h>
-#else
-    #include <memoryapi.h>
-    #include <sysinfoapi.h>
-#endif
-
-// ask operating system for memory
-static void *sth_arena_os_mem_reserve(size_t size, int with_large_pages) {
-    void *p; int wlp;
-#ifdef STH_BASE_PLAT_UNIX
-    wlp = (with_large_pages) ? MAP_HUGETLB : 0;
-    p = mmap(NULL, size, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS | wlp, -1, 0);
-    if (p == MAP_FAILED)
-        p = NULL;
-#else
-    wlp = (with_large_pages) ? (MEM_COMMIT | MEM_LARGE_PAGES) : 0;
-    p = VirtualAlloc(NULL, size, MEM_RESERVE | wlp, PAGE_READWRITE);
-#endif
-    return p;
-}
-
-// commit a page (prepare it for read/write)
-static inline int sth_arena_os_mem_commit(void *p, size_t size, int with_large_pages) {
-#ifdef STH_BASE_PLAT_UNIX
-    (void)with_large_pages;
-    return (mprotect(p, size, PROT_READ | PROT_WRITE) == 0);
-#else
-    if (with_large_pages)
-        return 1;
-    return (VirtualAlloc(p, size, MEM_COMMIT, PAGE_READWRITE) != 0);
-#endif
-}
-
-// release an reserved memory block
-static inline void sth_arena_os_mem_release(void *p, size_t size) {
-#ifdef STH_BASE_PLAT_UNIX
-    munmap(p, size);
-#else
-    (void)size;
-    VirtualFree(p, 0, MEM_RELEASE);
-#endif
-}
-
-static inline size_t sth_arena_os_get_pagesize(void) {
-#ifdef STH_BASE_PLAT_UNIX
-    return sysconf(_SC_PAGESIZE);
-#else
-    SYSTEM_INFO sysinfo;
-    memset(&sysinfo, 0, sizeof(sysinfo));
-    GetSystemInfo(&sysinfo);
-    return sysinfo.dwPageSize;
-#endif
-}
-
-static inline size_t sth_arena_os_get_largepagesize(void) {
-#ifdef STH_BASE_PLAT_UNIX
-    // 2 MB is a safe value for Linux and most BSD systems
-    return STH_BASE_MB(2);
-#else
-    return GetLargePageMinimum();
-#endif
-}
-
 sth_arena_t *sth_arena_new(sth_arena_config_t config) {
     sth_arena_t *a;
     size_t pagesize, reserve, commit;
     int lp = config.flags & STH_ARENA_LARGPAGES;
 
-    pagesize = (lp) ? sth_arena_os_get_largepagesize() : sth_arena_os_get_pagesize();
+    pagesize = (lp) ? sth_os_get_largepagesize() : sth_os_get_pagesize();
 
     // align reserve and commit fields by operating system's page size
     reserve = sth_base_align_pow2(config.reserve, pagesize);
     commit = sth_base_align_pow2(config.commit, pagesize);
 
-    a = (sth_arena_t*) sth_arena_os_mem_reserve(reserve, lp);
+    a = STH_BASE_DECLTYPE(a) sth_os_mem_reserve(reserve, lp);
     if (!a)
         return NULL;
 
-    if (!sth_arena_os_mem_commit(a, commit, lp)) {
-        sth_arena_os_mem_release(a, reserve);
+    if (!sth_os_mem_commit(a, commit, lp)) {
+        sth_os_mem_release(a, reserve);
         return NULL;
     }
 
@@ -147,9 +79,9 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
         size_t must_commit = current->commited;
         while (must_commit < pos_past)
             must_commit += current->config.commit;
-        sth_arena_os_mem_commit((unsigned char*)current + current->commited,
-                                must_commit,
-                                current->config.flags & STH_ARENA_LARGPAGES);
+        sth_os_mem_commit((unsigned char*)current + current->commited,
+                          must_commit,
+                          current->config.flags & STH_ARENA_LARGPAGES);
         current->commited = must_commit;
     }
 
@@ -172,7 +104,7 @@ void sth_arena_pop_to(sth_arena_t *arena, size_t pos) {
     pos = (pos > STH_ARENA_HEADER_SIZE) ? pos : STH_ARENA_HEADER_SIZE;
     while (current->pos_base >= pos) {
         prev = current->prev;
-        sth_arena_os_mem_release(current, current->reserved);
+        sth_os_mem_release(current, current->reserved);
         current = prev;
     }
     current->prev = NULL;
@@ -197,7 +129,7 @@ void sth_arena_destroy(sth_arena_t *arena) {
     current = arena->current;
     while (current) {
         prev = current->prev;
-        sth_arena_os_mem_release(current, current->reserved);
+        sth_os_mem_release(current, current->reserved);
         current = prev;
     }
 }

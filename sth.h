@@ -36,12 +36,17 @@
 #include <stdbool.h>
 
 #ifdef STH_BASE_PLAT_UNIX
+    #include <sys/mman.h>
     #include <sys/stat.h>
+    #include <unistd.h>
 #else
+    #include <memoryapi.h>
+    #include <sysinfoapi.h>
     #include <windows.h>
 #endif
 
 #include "base/base.h"
+#include "os/os.h"
 #include "ds/ds.h"
 #include "io/io.h"
 #include "allocators/allocators.h"
