@@ -18,12 +18,12 @@ static void *sth_arena_os_mem_reserve(size_t size, int with_large_pages) {
     void *p; int wlp;
 #ifdef STH_BASE_PLAT_UNIX
     wlp = (with_large_pages) ? MAP_HUGETLB : 0;
-    p = mmap(STH_NULL, size, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS | wlp, -1, 0);
+    p = mmap(NULL, size, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS | wlp, -1, 0);
     if (p == MAP_FAILED)
-        p = STH_NULL;
+        p = NULL;
 #else
     wlp = (with_large_pages) ? (MEM_COMMIT | MEM_LARGE_PAGES) : 0;
-    p = VirtualAlloc(STH_NULL, size, MEM_RESERVE | wlp, PAGE_READWRITE);
+    p = VirtualAlloc(NULL, size, MEM_RESERVE | wlp, PAGE_READWRITE);
 #endif
     return p;
 }
@@ -83,11 +83,11 @@ sth_arena_t *sth_arena_new(sth_arena_config_t config) {
 
     a = (sth_arena_t*) sth_arena_os_mem_reserve(reserve, lp);
     if (!a)
-        return STH_NULL;
+        return NULL;
 
     if (!sth_arena_os_mem_commit(a, commit, lp)) {
         sth_arena_os_mem_release(a, reserve);
-        return STH_NULL;
+        return NULL;
     }
 
     memcpy(&a->config, &config, sizeof(config));
@@ -100,7 +100,7 @@ sth_arena_t *sth_arena_new(sth_arena_config_t config) {
 
     a->pos_base = 0;
     a->pos = STH_ARENA_HEADER_SIZE;
-    a->prev = STH_NULL;
+    a->prev = NULL;
     a->current = a;
 
     return a;
@@ -113,9 +113,9 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
     // assert that alignment is a power of 2
     STH_BASE_ASSERT((alignment & (alignment - 1)) == 0);
 
-    // If size is zero or requested size is bigger than the arena's capacity, return STH_NULL
+    // If size is zero or requested size is bigger than the arena's capacity, return NULL
     if (size == 0 || size > (arena->reserved - STH_ARENA_HEADER_SIZE))
-        return STH_NULL;
+        return NULL;
 
     current = arena->current;
     pos_pre = sth_base_align_pow2(current->pos, alignment);
@@ -123,10 +123,10 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
 
     if (pos_past > current->reserved) {
         if (current->config.flags & STH_ARENA_FIXED)
-            return STH_NULL;
+            return NULL;
 
         if ( !(new_arena = sth_arena_new(current->config)))
-            return STH_NULL;
+            return NULL;
 
         new_arena->pos_base = current->pos_base + current->reserved;
         new_arena->prev = current;
@@ -175,7 +175,7 @@ void sth_arena_pop_to(sth_arena_t *arena, size_t pos) {
         sth_arena_os_mem_release(current, current->reserved);
         current = prev;
     }
-    current->prev = STH_NULL;
+    current->prev = NULL;
     arena->current = current;
     new_pos = pos - current->pos_base;
     STH_BASE_ASSERT(new_pos <= current->pos);
@@ -212,14 +212,14 @@ void sth_arena_scope_begin(sth_arena_t *arena, sth_arena_scope_t *scope_out) {
 void sth_arena_scope_end(sth_arena_scope_t *scope) {
     sth_arena_pop_to(scope->arena, scope->pos);
     *scope = (sth_arena_scope_t){
-        .arena = STH_NULL,
+        .arena = NULL,
         .pos = 0,
     };
 }
 
 char *sth_arena_strndup(sth_arena_t *arena, const char *s, size_t size) {
     char *buf = STH_BASE_DECLTYPE(buf) sth_arena_alloc(arena, size + 1);
-    STH_BASE_ASSERT(buf != STH_NULL);
+    STH_BASE_ASSERT(buf != NULL);
     memcpy(buf, s, size);
     buf[size] = 0;
     return buf;

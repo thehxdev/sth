@@ -4,7 +4,7 @@ extern "C" {
 
 char *sth_io_file_read_all(const char *path, size_t *out_file_size) {
     size_t file_size = 0, nread = 0;
-    char *content = STH_NULL;
+    char *content = NULL;
     FILE *fp = fopen(path, "rb");
     if (!fp)
         goto ret;
@@ -16,7 +16,7 @@ char *sth_io_file_read_all(const char *path, size_t *out_file_size) {
     rewind(fp);
 
     content = STH_BASE_DECLTYPE(content) STH_BASE_MALLOC(file_size + 1);
-    STH_BASE_ASSERT(content != STH_NULL);
+    STH_BASE_ASSERT(content != NULL);
 
     nread = fread(content, sizeof(*content), file_size, fp);
     STH_BASE_ASSERT(file_size == nread);

@@ -15,7 +15,7 @@ int sth_io_rename(const char *old_path, const char *new_path) {
 }
 
 int sth_io_mkdir_if_not_exists(const char *path) {
-    BOOL res = (int)CreateDirectory(path, STH_NULL);
+    BOOL res = (int)CreateDirectory(path, NULL);
     if (!res) {
         int err = GetLastError();
         if (err == ERROR_ALREADY_EXISTS)

@@ -2,10 +2,8 @@
 #define _STH_BASE_BASE_H_
 
 #ifdef __cplusplus
-    #define STH_NULL nullptr
     #define STH_BASE_DECLTYPE(T) (decltype(T))
 #else
-    #define STH_NULL NULL
     #define STH_BASE_DECLTYPE(T)
 #endif
 
@@ -62,8 +60,8 @@ enum {
 
 
 #if defined(NDEBUG)
-    #define sth_base_assert(cond)   (STH_NULL)
-    #define sth_base_trap_assert(cond)  (STH_NULL)
+    #define sth_base_assert(cond)   (NULL)
+    #define sth_base_trap_assert(cond)  (NULL)
 #else
     #define sth_base_assert(cond) \
         do { \
