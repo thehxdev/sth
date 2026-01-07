@@ -8,11 +8,16 @@ let
     ];
 in
     mkShell {
-        packages = (with pkgs; [
+        nativeBuildInputs = with pkgs; [
             gcc
             gnumake
+        ];
+
+        buildInputs = dependencyLibraries;
+
+        packages = with pkgs; [
             gdb
-        ]) ++ dependencyLibraries;
+        ];
 
         shellHook = ''
         export CC=gcc
