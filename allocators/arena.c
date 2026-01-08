@@ -77,8 +77,9 @@ void *sth_arena_alloc_align(sth_arena_t *arena, size_t size, size_t alignment) {
         // divisible by "reserve" field. So we can divied the arena's buffer to
         // blocks with "commit" size each.
         size_t must_commit = current->commited;
-        while (must_commit < pos_past)
+        while (must_commit < pos_past) {
             must_commit += current->config.commit;
+        }
         sth_os_mem_commit((unsigned char*)current + current->commited,
                           must_commit,
                           current->config.flags & STH_ARENA_LARGPAGES);
