@@ -18,10 +18,10 @@
     || (defined(__APPLE__) && defined(__MACH__)) /* apple */ \
     || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) /* bsd */
     // unix-like platforms
-    #define STH_BASE_PLAT_UNIX
+    #define STH_PLATFORM_UNIX
 #elif defined(_WIN32) || defined(_WIN64)
     // windows platform
-    #define STH_BASE_PLAT_WINDOWS
+    #define STH_PLATFORM_WINDOWS
 #else
     // not unix-like nor windows
     #error "unsupported platform"
@@ -35,7 +35,7 @@
 #include <errno.h>
 #include <stdbool.h>
 
-#ifdef STH_BASE_PLAT_UNIX
+#ifdef STH_PLATFORM_UNIX
     #include <sys/mman.h>
     #include <sys/stat.h>
     #include <unistd.h>
