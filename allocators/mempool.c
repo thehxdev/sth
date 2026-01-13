@@ -2,6 +2,10 @@
 extern "C" {
 #endif
 
+union sth_mempool_node {
+    sth_mempool_node_t *next;
+};
+
 void sth_mempool_init(sth_mempool_t *self, sth_arena_t *arena, size_t size) {
     if (size < sizeof(sth_mempool_node_t))
         size = sizeof(sth_mempool_node_t);

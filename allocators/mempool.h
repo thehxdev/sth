@@ -6,9 +6,6 @@ extern "C" {
 #endif
 
 typedef union sth_mempool_node sth_mempool_node_t;
-union sth_mempool_node {
-    sth_mempool_node_t *next;
-};
 
 typedef struct {
     sth_arena_t *arena;
