@@ -2,9 +2,9 @@
 #define _STH_H_
 
 #define STH_VERSION_MAJOR 0
-#define STH_VERSION_MINOR 3
+#define STH_VERSION_MINOR 4
 #define STH_VERSION_PATCH 0
-#define STH_VERSION_STRING "0.3.0"
+#define STH_VERSION_STRING "0.4.0"
 
 #if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
     #error "At least C99 standard is required"
