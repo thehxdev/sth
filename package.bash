@@ -7,6 +7,6 @@ log_run() {
 
 DIRECTORIES=( allocators/ base/ ds/ io/ os/ )
 
-log_run tar czf libsth.tar.gz sth.* "${DIRECTORIES[@]}"
+log_run tar czf libsth.tar.gz sth.* LICENSE README.txt "${DIRECTORIES[@]}"
 
 echo "[I] packaged to \`libsth.tar.gz'"
