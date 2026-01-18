@@ -5,7 +5,7 @@ log_run() {
     $@
 }
 
-DIRECTORIES=( allocators/ base/ ds/ io/ os/ )
+DIRECTORIES=( allocators/ base/ ds/ io/ os/ encoding/ )
 
 log_run tar czf libsth.tar.gz sth.* LICENSE README.txt "${DIRECTORIES[@]}"
 
