@@ -49,6 +49,7 @@
 #include "os/os.h"
 #include "ds/ds.h"
 #include "io/io.h"
+#include "encoding/encoding.h"
 #include "allocators/allocators.h"
 
 #endif // _STH_H_

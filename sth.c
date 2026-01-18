@@ -9,5 +9,6 @@
 #include "os/os.c"
 #include "allocators/allocators.c"
 #include "io/io.c"
+#include "encoding/encoding.c"
 
 #endif // _STH_C_
